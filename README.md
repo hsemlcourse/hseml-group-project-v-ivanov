@@ -1,60 +1,52 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/kOqwghv0)
-# ML Project — [Название проекта]
+# ML Project — Предсказание концентрации PM2.5 в атмосфере Пекина
 
-**Студент:** [ФИО / Student ID]
+**Студент:** Иванов В.
 
 **Группа:** [Группа]
 
 
-## Оглавление
-
-1. [Описание задачи](#описание-задачи)
-2. [Структура репозитория](#структура-репозитория)
-3. [Запуски](#быстрый-старт)
-4. [Данные](#данные)
-5. [Результаты](#результаты)
-7. [Отчёт](#отчёт)
-
-
 ## Описание задачи
 
-<!-- Кратко опишите задачу: что предсказываем, какой датасет, метрика качества -->
+Предсказание почасовой концентрации мелкодисперсных частиц PM2.5 (мкг/м³) по метеорологическим и химическим показателям 12 станций мониторинга г. Пекин.
 
-**Задача:** [Классификация / Регрессия / Кластеризация / ...]
+**Задача:** Регрессия
 
-**Датасет:** [Название и источник датасета]
+**Датасет:** Beijing Multi-Site Air-Quality Data (UCI / Kaggle)  
+Источник: https://www.kaggle.com/datasets/sid321axn/beijing-multisite-airquality-data-set  
+420 000+ строк, 12 станций, период 2013–2017.
 
-**Целевая метрика:** [Accuracy / F1 / RMSE / ...]
+**Целевая метрика:** RMSE (Root Mean Squared Error)  
+Дополнительно: MAE, R²
 
 
 ## Структура репозитория
-Опишите структуру проекта, сохранив при этом верхнеуровневые папки. Можно добавить новые при необходимости.
+
 ```
 .
 ├── data
-│   ├── processed               # Очищенные и обработанные данные
-│   └── raw                     # Исходные файлы
-├── models                      # Сохранённые модели 
-├── notebooks
-│   ├── 01_eda.ipynb            # EDA
-│   ├── 02_baseline.ipynb       # Baseline-модель
-│   └── 03_experiments.ipynb    # Эксперименты и ablation study
-├── presentation                # Презентация для защиты
-├── report
-│   ├── images                  # Изображения для отчёта
-│   └── report.md               # Финальный отчёт
-├── src
-│   ├── preprocessing.py        # Предобработка данных
-│   └── modeling.py             # Обучение и оценка моделей
-├── tests
-│   └── test.py                 # Тесты пайплайна
+│   ├── processed/          # Обработанные данные (train/val/test.parquet)
+│   └── raw/                # Исходные CSV-файлы по станциям
+├── models/                 # Сохранённые модели (.joblib)
+├── notebooks/
+│   ├── 01_eda.ipynb        # EDA, очистка, feature engineering, сплит
+│   └── 02_baseline.ipynb   # Baseline — Linear Regression
+├── presentation/           # Презентация для защиты
+├── report/
+│   ├── images/             # Графики для отчёта
+│   └── report.md           # Финальный отчёт
+├── src/
+│   ├── __init__.py
+│   └── preprocessing.py    # Пайплайн предобработки данных
+├── tests/
+│   └── test.py             # Тесты пайплайна
 ├── requirements.txt
 └── README.md
 ```
 
+
 ## Запуск
 
-Этот блок замените способом запуска вашего сервиса.
 ```bash
 # 1. Клонировать репозиторий
 git clone <url>
@@ -67,19 +59,32 @@ source .venv/bin/activate   # Linux/macOS
 
 # 3. Установить зависимости
 pip install -r requirements.txt
+
+# 4. Скачать датасет с Kaggle и распаковать в data/raw/
+# kaggle datasets download -d sid321axn/beijing-multisite-airquality-data-set
+# unzip *.zip -d data/raw/
+
+# 5. Запустить ноутбуки по порядку
+jupyter notebook notebooks/01_eda.ipynb
+jupyter notebook notebooks/02_baseline.ipynb
 ```
 
+
 ## Данные
-- `data/raw/` — исходные файлы
-- `data/processed/` — предобработанные данные
+
+- `data/raw/` — исходные CSV-файлы (по одному на станцию)
+- `data/processed/` — обработанные данные после `01_eda.ipynb`:
+  - `train.parquet` — 2013–2015
+  - `val.parquet` — 2016
+  - `test.parquet` — 2017
 
 
 ## Результаты
-Здесь коротко выпишите результаты.
-| Модель | [Метрика 1] | [Метрика 2] | Примечание |
-|--------|-------------|-------------|------------|
-| Baseline | — | — | |
-| Лучшая модель | — | — | |
+
+| Модель | RMSE (Val) | MAE (Val) | R² (Val) | Примечание |
+|--------|-----------|----------|---------|------------|
+| Linear Regression (baseline) | — | — | — | Без feature engineering |
+| Лучшая модель (CP2) | — | — | — | |
 
 
 ## Отчёт
