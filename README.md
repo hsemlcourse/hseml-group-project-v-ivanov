@@ -83,7 +83,7 @@ jupyter notebook notebooks/02_baseline.ipynb
 
 | Модель | RMSE (Val) | MAE (Val) | R² (Val) | Примечание |
 |--------|-----------|----------|---------|------------|
-| Linear Regression (baseline) | — | — | — | Без feature engineering |
+| Linear Regression (baseline) | 26.21 | 17.50 | 0.853 | Без feature engineering |
 | Лучшая модель (CP2) | — | — | — | |
 
 
