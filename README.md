@@ -25,27 +25,33 @@
 ```
 .
 ├── data
-│   ├── processed/          # Обработанные данные (train/val/test.parquet)
-│   └── raw/                # Исходные CSV-файлы по станциям
-├── models/                 # Сохранённые модели (.joblib)
+│   ├── processed/              # Обработанные данные (train/val/test.parquet)
+│   └── raw/                    # Исходные CSV-файлы по станциям
+├── models/                     # Сохранённые модели (.joblib)
 ├── notebooks/
-│   ├── 01_eda.ipynb        # EDA, очистка, feature engineering, сплит
-│   └── 02_baseline.ipynb   # Baseline — Linear Regression
-├── presentation/           # Презентация для защиты
+│   ├── 01_eda.ipynb            # EDA, очистка, feature engineering, сплит
+│   ├── 02_baseline.ipynb       # Baseline — Linear Regression (CP1)
+│   └── 03_experiments.ipynb    # Эксперименты с 5+ моделями, Optuna, PCA (CP2)
+├── presentation/               # Презентация для защиты
 ├── report/
-│   ├── images/             # Графики для отчёта
-│   └── report.md           # Финальный отчёт
+│   ├── images/                 # Графики для отчёта
+│   ├── experiments_table.csv   # Таблица экспериментов CP2
+│   └── report.md               # Финальный отчёт
 ├── src/
 │   ├── __init__.py
-│   └── preprocessing.py    # Пайплайн предобработки данных
+│   └── preprocessing.py        # Пайплайн предобработки данных
 ├── tests/
-│   └── test.py             # Тесты пайплайна
+│   └── test.py                 # Тесты пайплайна (pytest)
+├── Dockerfile
+├── docker-compose.yml
 ├── requirements.txt
 └── README.md
 ```
 
 
 ## Запуск
+
+### Локально
 
 ```bash
 # 1. Клонировать репозиторий
@@ -67,6 +73,17 @@ pip install -r requirements.txt
 # 5. Запустить ноутбуки по порядку
 jupyter notebook notebooks/01_eda.ipynb
 jupyter notebook notebooks/02_baseline.ipynb
+jupyter notebook notebooks/03_experiments.ipynb
+
+# 6. Запустить тесты
+pytest tests/
+```
+
+### Docker
+
+```bash
+docker-compose up
+# Jupyter доступен на http://localhost:8888
 ```
 
 
@@ -74,17 +91,26 @@ jupyter notebook notebooks/02_baseline.ipynb
 
 - `data/raw/` — исходные CSV-файлы (по одному на станцию)
 - `data/processed/` — обработанные данные после `01_eda.ipynb`:
-  - `train.parquet` — 2013–2015
-  - `val.parquet` — 2016
-  - `test.parquet` — 2017
+  - `train.parquet` — 2013–2015 (71%)
+  - `val.parquet` — 2016 (25%)
+  - `test.parquet` — 2017 (4%)
 
 
 ## Результаты
 
 | Модель | RMSE (Val) | MAE (Val) | R² (Val) | Примечание |
 |--------|-----------|----------|---------|------------|
-| Linear Regression (baseline) | 26.21 | 17.50 | 0.853 | Без feature engineering |
-| Лучшая модель (CP2) | — | — | — | |
+| Linear Regression (CP1 baseline) | 26.21 | 17.50 | 0.853 | Сырые фичи, без лагов |
+| Linear Regression (все фичи) | 13.39 | 8.06 | 0.9616 | С лагами и rolling |
+| Ridge (Optuna) | 13.39 | 8.06 | 0.9616 | alpha≈0.28 |
+| LightGBM + PCA (19 comp) | 13.51 | 8.48 | 0.9609 | Эксперимент PCA |
+| HistGradientBoosting | 3.23 | 1.35 | 0.9978 | sklearn fast GBM |
+| Random Forest (Optuna) | 3.19 | 0.32 | 0.9978 | n_est=200 |
+| XGBoost (Optuna) | 3.02 | 0.97 | 0.998 | early stopping |
+| Ensemble avg(RF+XGB+LGBM) | 2.57 | 0.51 | 0.9986 | Averaging |
+| **LightGBM (Optuna)** | **2.30** | **0.63** | **0.9989** | **Финальная модель** |
+
+Полная таблица экспериментов: [`report/experiments_table.csv`](report/experiments_table.csv)
 
 
 ## Отчёт

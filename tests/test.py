@@ -19,6 +19,7 @@ from src.preprocessing import (
     add_time_features,
     add_lag_features,
     add_rolling_features,
+    add_interaction_features,
     time_based_split,
     build_feature_matrix,
 )
@@ -152,3 +153,12 @@ def test_build_feature_matrix():
     X, y = build_feature_matrix(df, target_col="PM2.5")
     assert "PM2.5" not in X.columns
     assert len(X) == len(y)
+
+
+def test_add_interaction_features():
+    df = _make_sample_df(n=100)
+    df = encode_wind_direction(df)
+    df = add_interaction_features(df)
+    for col in ["O3_to_NO2", "wind_u", "wind_v", "pm10_pm25_ratio", "temp_dewp_diff", "season"]:
+        assert col in df.columns
+    assert df["season"].between(0, 3).all()

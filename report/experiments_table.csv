@@ -1,0 +1,9 @@
+Модель,RMSE Train,RMSE Val,MAE Val,R² Val,Примечание
+"LightGBM (Optuna, 30 trials)",1.079,2.3,0.633,0.9989,"{'num_leaves': 74, 'max_depth': 7, 'learning_rate': 0.06751920052478799, 'subsample': 0.9379155646925814, 'colsample_bytree': 0.9989665523092092, 'min_child_samples': 22, 'reg_lambda': 6.496560363487971, 'n_estimators': 1000}"
+Ensemble: avg(RF + XGB + LGBM),0.991,2.573,0.51,0.9986,Averaging ансамбль
+"XGBoost (Optuna, 30 trials)",1.915,3.024,0.968,0.998,"{'max_depth': 5, 'learning_rate': 0.04585880854088275, 'subsample': 0.774439933428912, 'colsample_bytree': 0.9382777773056039, 'min_child_weight': 7, 'reg_lambda': 1.2209295074681008, 'n_estimators': 1000}"
+"RandomForest (Optuna, 20 trials)",1.017,3.192,0.324,0.9978,"{'max_depth': 25, 'min_samples_leaf': 1, 'max_features': 0.978675977551506, 'n_estimators': 200}"
+HistGradientBoosting (sklearn),2.827,3.233,1.346,0.9978,"max_iter=300, depth=8, lr=0.05"
+LinearRegression (все фичи + лаги),15.325,13.394,8.063,0.9616,"CP1 baseline + лаги 1/2/3/24, rolling 3/24"
+"Ridge (Optuna, 30 trials)",15.325,13.394,8.063,0.9616,alpha=0.2780
+"LightGBM + PCA (19 компонент, 95% var)",10.793,13.512,8.475,0.9609,Эксперимент с уменьшением размерности

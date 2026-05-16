@@ -143,6 +143,23 @@ def encode_station(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def add_interaction_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Add domain-driven interaction and ratio features."""
+    df = df.copy()
+    # Oxidant ratio: high O3 suppresses PM2.5 (photochemical reaction)
+    df["O3_to_NO2"] = df["O3"] / (df["NO2"] + 1)
+    # Wind vector components (speed × direction); cv (calm) → 0
+    df["wind_u"] = df["WSPM"] * df["wd_sin"].fillna(0)
+    df["wind_v"] = df["WSPM"] * df["wd_cos"].fillna(0)
+    # PM10/PM2.5 ratio indicates coarse particle fraction
+    df["pm10_pm25_ratio"] = df["PM10"] / (df["PM2.5"] + 1)
+    # Temperature-humidity index (affects particulate behavior)
+    df["temp_dewp_diff"] = df["TEMP"] - df["DEWP"]
+    # Season (0=winter, 1=spring, 2=summer, 3=autumn)
+    df["season"] = ((df["month"] % 12) // 3).astype(int)
+    return df
+
+
 def time_based_split(df: pd.DataFrame, val_year: int = 2016, test_year: int = 2017):
     """
     Split dataset by time to avoid data leakage:
@@ -193,6 +210,7 @@ def full_pipeline(
         df = add_lag_features(df)
     if add_rolling:
         df = add_rolling_features(df)
+    df = add_interaction_features(df)
 
     train, val, test = time_based_split(df)
 

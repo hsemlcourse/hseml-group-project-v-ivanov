@@ -1,0 +1,11 @@
+services:
+  notebook:
+    build: .
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./report:/app/report
+    environment:
+      - PYTHONPATH=/app
