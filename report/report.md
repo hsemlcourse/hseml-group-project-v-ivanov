@@ -249,6 +249,18 @@ docker-compose up
 # API:     http://localhost:8000/docs
 ```
 
+### Скриншоты
+
+![Swagger UI](images/Swagger.png)
+*Swagger UI — автодокументация всех эндпоинтов.*
+
+![Predict endpoint](images/Predict.png)
+*Запрос POST /predict и ответ с предсказанием PM2.5.*
+
+### Видео демонстрация
+
+[Demo.mov](Demo.mov)
+
 ### Docker
 
 Dockerfile на базе `python:3.10-slim`. Установлен `libgomp1` для XGBoost/LightGBM на Linux. `docker-compose.yml` поднимает два сервиса: `notebook` (Jupyter) и `api` (FastAPI).
